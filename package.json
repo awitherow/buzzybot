@@ -1,0 +1,22 @@
+{
+  "name": "buzzybot",
+  "version": "1.0.0",
+  "description": "Twitter bot for Buzzcoin",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jackkdev/buzzybot.git"
+  },
+  "author": "Jack Coble",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jackkdev/buzzybot/issues"
+  },
+  "homepage": "https://github.com/jackkdev/buzzybot#readme",
+  "dependencies": {
+    "twitter": "^1.7.1"
+  }
+}
