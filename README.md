@@ -9,7 +9,7 @@ If you don't already have have them, please install [Node.js](http://nodejs.org/
 Make an empty project directory and [download this file](https://github.com/jackkdev/buzzybot/archive/master.zip), and unzip the contents to your project directory. Enter the terminal and navigate to the project directory. You should see the files, but you only need to edit one of them: `config.js`
 
 Before you can run the project, we need to install the Bot's dependancies:
-`npm install twit`
+`npm install twitter`
 
 This installs the Twitter package which will be used to communicate through the API to make posts.
 
