@@ -4,40 +4,40 @@ const client = new twit(config);
 
 require('dotenv');
 
-function searchTwitter() {
-  const params = {
-    q: 'buzzcoin',
-    count: 100,
-    result_type: ['recent'],
-    language: 'en'
-  }
+// Defining Buzzcoin parameters
+var retweet = function() {
+    var params = {
+        q: '#buzzcoin, $BUZZ',  // REQUIRED
+        result_type: 'recent',
+        lang: 'en'
+    }
 
-  return client.get('search/tweets', params)
-    .then(function(res) {
-      const tweet = res.data.statuses[0];
-      if (!tweet) {
-        throw new Error('No related tweets found!');
-      }
-      return tweet;
+    client.get('search/tweets', params, function(err, data) {
+      // if there no errors
+        if (!err) {
+          // ID of status to retweet
+            var retweetId = data.statuses[0].id_str;
+            // Retweet
+            client.post('statuses/retweet/:id', {
+                id: retweetId
+            }, function(err, response) {
+                if (response) {
+                    console.log('Buzzy Bot retweeted something! ID:', retweetId);
+                }
+                // if there was an error while tweeting
+                if (err) {
+                    console.log('Sorry, BuzzyBot could not retweet :(');
+                }
+            });
+        }
+        // if unable to Search a tweet
+        else {
+          console.log('Buzzy Bot could not find a Buzzy tweet to retweet :(');
+        }
     });
 }
 
-function retweet() {
-  return searchTwitter()
-    .then(function(status) {
-      console.log("Buzzy Bot retweeted something:", status.id_str);
-      return client.post('statuses/retweet/:id', { id : status.id_str });
-    })
-    .catch(function(err) {
-      console.log("Sorry, Buzzy Bot had an error:", err);
-    });
-}
-
-function postTweet() {
-  client.post('statuses/update', { status: 'I got Buzzy Bot running! @_buzzcoin $BUZZ #buzzcoin #proofofstake' }, function(err, data, response) {
-    console.log("Posted a status!");
-  })
-}
-
-postTweet();
+// grab & retweet as soon as program is running...
 retweet();
+// retweet in every 50 minutes
+setInterval(retweet, 3600000);
