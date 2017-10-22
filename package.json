@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/jackkdev/buzzybot#readme",
   "dependencies": {
+    "dotenv": "^4.0.0",
     "twitter": "^1.7.1"
   }
 }
