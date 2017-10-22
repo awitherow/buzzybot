@@ -29,7 +29,7 @@ function retweet() {
       return client.post('statuses/retweet/:id', { id : status.id_str });
     })
     .catch(function(err) {
-      console.log('Error retweeting', err);
+      console.log("Sorry, Buzzy Bot had an error:", err);
     });
 }
 
