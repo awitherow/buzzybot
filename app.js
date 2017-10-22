@@ -26,7 +26,7 @@ var retweet = function() {
                 }
                 // If there is an error
                 if (err) {
-                    console.log('Sorry, BuzzyBot could not retweet :(');
+                    console.log('Sorry, BuzzyBot could not retweet, you may have already retweeted it :(');
                 }
             });
         }
@@ -39,5 +39,5 @@ var retweet = function() {
 
 // Run the retweet function
 retweet();
-// Automate bot every 60 mins
-setInterval(retweet, 3600000);
+// Automate bot every minute
+setInterval(retweet, 60000);
