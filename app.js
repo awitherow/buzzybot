@@ -8,13 +8,29 @@ function searchTwitter() {
   const params = {
     q: '#buzzcoin',
     count: 100,
-    result_type: ['recent', 'popular'],
+    result_type: ['recent'],
     language: 'en'
   }
 
   return client.get('search/tweets', params)
     .then(function(res) {
-      console.log(res);
+      const tweet = res.data.statuses[0];
+      if (!tweet) {
+        throw new Error('No related tweets found!');
+      }
+      return tweet;
     });
 }
-searchTwitter();
+
+function retweet() {
+  return searchTwitter()
+    .then(function(status) {
+      console.log("Buzzy Bot retweeted something:", status.id_str);
+      return client.post('statuses/retweet/:id', { id : status.id_str });
+    })
+    .catch(function(err) {
+      console.log('Error retweeting', err);
+    });
+}
+
+retweet();
