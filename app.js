@@ -7,13 +7,13 @@ require('dotenv');
 // Defining Buzzcoin parameters
 var retweet = function() {
     var params = {
-        q: '#buzzcoin, $BUZZ',  // REQUIRED
+        q: '#buzzcoin, $BUZZ',  // Content we want to look for, BUZZCOIN
         result_type: 'recent',
         lang: 'en'
     }
 
     client.get('search/tweets', params, function(err, data) {
-      // if there no errors
+      // If there no errors
         if (!err) {
           // ID of status to retweet
             var retweetId = data.statuses[0].id_str;
@@ -24,20 +24,20 @@ var retweet = function() {
                 if (response) {
                     console.log('Buzzy Bot retweeted something! ID:', retweetId);
                 }
-                // if there was an error while tweeting
+                // If there is an error
                 if (err) {
                     console.log('Sorry, BuzzyBot could not retweet :(');
                 }
             });
         }
-        // if unable to Search a tweet
+        // Not able to find tweet
         else {
           console.log('Buzzy Bot could not find a Buzzy tweet to retweet :(');
         }
     });
 }
 
-// grab & retweet as soon as program is running...
+// Run the retweet function
 retweet();
-// retweet in every 50 minutes
+// Automate bot every 60 mins
 setInterval(retweet, 3600000);
