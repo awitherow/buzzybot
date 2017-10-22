@@ -6,7 +6,7 @@ require('dotenv');
 
 function searchTwitter() {
   const params = {
-    q: '#buzzcoin',
+    q: 'buzzcoin',
     count: 100,
     result_type: ['recent'],
     language: 'en'
