@@ -4,6 +4,8 @@ const client = new twit(config);
 
 require('dotenv');
 
+console.log("Hooray! Buzzy Bot is running!");
+
 // Defining Buzzcoin parameters
 var retweet = function() {
     var params = {
