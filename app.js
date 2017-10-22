@@ -33,4 +33,11 @@ function retweet() {
     });
 }
 
+function postTweet() {
+  client.post('statuses/update', { status: 'I got Buzzy Bot running! @_buzzcoin $BUZZ #buzzcoin #proofofstake' }, function(err, data, response) {
+    console.log("Posted a status!");
+  })
+}
+
+postTweet();
 retweet();
