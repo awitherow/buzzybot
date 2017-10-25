@@ -6,6 +6,23 @@ require('dotenv');
 
 console.log("Hooray! Buzzy Bot is running!");
 
+// Posting Bot
+var messages = ["New to the #BUZZFAM? Get started with BUZZ at http://buzzcoin.info/get-started.html", "You guys apart of our 24/7 Discord server? If not, what are you missing out on?! https://t.co/XghGz66wYo"];
+var messageLocation = 0;
+
+var postTweet = function() {
+    client.post('statuses/update', {
+        status: messages[messageLocation]
+    }, function(err, data, response) {
+        console.log("Posted tweet!");
+    });
+    messageLocation += 1;
+}
+
+postTweet();
+
+setInterval(postTweet, 43200000);
+
 // Defining Buzzcoin parameters
 var retweet = function() {
     var params = {
