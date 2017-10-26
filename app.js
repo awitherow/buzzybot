@@ -80,16 +80,22 @@ var categories = [
   }
 ];
 
+var selectedCategories = [];
+
 shuffle(categories)
   .filter(function(category) {
     // excludes inactive categories.
     if (category.active) {
       return category;
     }
+
+    // TODO: lastCategories = read file last_tweet_categories.json
+    // if (lastCategories.indexOf(category.name)) return false
   })
   .slice(0, 2) // take only first two categories
   .map(function(category) {
     console.log("[INFO] sending tweet for category -> " + category.name);
+    selectedCategories.push(category.name);
 
     var rand = getRandomNumber(0, category.tweets.length);
     var status = category.tweets[rand];
@@ -104,3 +110,7 @@ shuffle(categories)
       }
     });
   });
+
+// TODO: delete old last_tweet_categories.json
+// TODO: create a new last_tweet_categories.json
+// TODO: write selectedCategories to last_tweet_categories.json
