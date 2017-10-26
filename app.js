@@ -36,15 +36,15 @@ var tweets = [{
     },
     {
         name: "os",
-        status: ["Got a passion for #blockchain and #development? Get involved with our open source incentive program! https://goo.gl/1vCMss", ""]
+        status: ["Got a passion for #blockchain and #development? Get involved with our #opensource incentive program! https://goo.gl/1vCMss", "Blah"]
     },
     {
         name: "community",
-        status: ["Get 24/7 support by joining our Discord server! https://t.co/XghGz66wYo", ""]
+        status: ["Get 24/7 support by joining our Discord server! https://t.co/XghGz66wYo", "Blah"]
     },
     {
         name: "get-started",
-        status: ["New to #BUZZ? Take a look at our getting started page! http://buzzcoin.info/get-started.html", ""]
+        status: ["New to #BUZZ? Take a look at our getting started page! http://buzzcoin.info/get-started.html", "Blah"]
     }
 ]
 
@@ -55,7 +55,7 @@ var result = tweets.map(function (tweets) {
 
 // Shuffle tweets
 var randTweet = shuffle(result)
-var result = result.slice(0, 1)[0];
+var result = result.slice(0, 1)[0]//.toString*/();
 console.log(result);
 
 /* client.post('statuses/destroy/:id', { id: '923608115655991297' }, function (err, data, response) {
