@@ -68,6 +68,14 @@ var categories = [
       "New to $BUZZ? Getting started has never been easier at http://buzzcoin.info/get-started.html",
       "GET_STARTED_SECOND_TWEET"
     ],
+    active: true
+  },
+  {
+    name: "pool",
+    tweets: [
+      "Interesting in getting #ProofofStake #rewards daily with $BUZZ? Join the #official #buzz #pool today! buzzcoin.info",
+      "POOL_SECOND_TWEET"
+    ],
     active: false
   }
 ];
