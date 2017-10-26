@@ -5,7 +5,7 @@ const client = new twit(config);
 console.log("[INFO] Horray! BUZZBOT is running...");
 
 /**
- * Shuffles array in place.
+ * Gets a random integer between a max and minimum.
  * @param {int} min minimum number for the random number return value.
  * @param {int} max maximum number for the random number return value.
  */
