@@ -94,7 +94,7 @@ shuffle(categories)
     var rand = getRandomNumber(0, category.tweets.length);
     var status = category.tweets[rand];
 
-    console.log("status ", status);
+    console.log("[INFO] status chosen -> ", status);
 
     client.post("statuses/update", { status }, function(err, data, response) {
       if (err) {
