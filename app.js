@@ -1,67 +1,98 @@
-const twit = require('twit');
-const config = require('./config');
+const twit = require("twit");
+const config = require("./config");
 const client = new twit(config);
 
-console.log("Hooray! Buzzy Bot is running!");
+console.log("[INFO] Horray! BUZZBOT is running...");
 
-function shuffle(array) {
-    var currentIndex = array.length,
-        temporaryValue, randomIndex;
-
-    // While there remain elements to shuffle...
-    while (0 !== currentIndex) {
-
-        // Pick a remaining element...
-        randomIndex = Math.floor(Math.random() * currentIndex);
-        currentIndex -= 1;
-
-        // And swap it with the current element.
-        temporaryValue = array[currentIndex];
-        array[currentIndex] = array[randomIndex];
-        array[randomIndex] = temporaryValue;
-    }
-
-    return array;
+/**
+ * Shuffles array in place.
+ * @param {int} min minimum number for the random number return value.
+ * @param {int} max maximum number for the random number return value.
+ */
+function getRandomNumber(min, max) {
+  return Math.floor(Math.random() * (max - min)) + min;
 }
 
-// POST a status update (Hello World!)
-// exchange, open source donation, communities (buzzcoin.info/#community), get started, eventuall pool/referral
-// pick 2 of the objects, after shuffling tweets array
-// pick random tweet in tweets.status
-// send in loop
+/**
+ * Shuffles array in place.
+ * @param {Array} a items An array containing the items.
+ */
+function shuffle(a) {
+  var currentIndex = a.length,
+    temporaryValue,
+    randomIndex;
 
-var tweets = [{
-        name: "exchange",
-        status: ["Buy #BUZZ on the following exchanges! https://www.coinexchange.io/ and https://yobit.net/en/. Get your #BUZZCOIN today!", "Don't leave us just yet! Place your #BUZZ sell orders at 25 sats to create a massive wall! Go #BUZZCOIN!"]
-    },
-    {
-        name: "os",
-        status: ["Got a passion for #blockchain and #development? Get involved with our #opensource incentive program! https://goo.gl/1vCMss", "Blah"]
-    },
-    {
-        name: "community",
-        status: ["Get 24/7 support by joining our Discord server! https://t.co/XghGz66wYo", "Blah"]
-    },
-    {
-        name: "get-started",
-        status: ["New to #BUZZ? Take a look at our getting started page! http://buzzcoin.info/get-started.html", "Blah"]
+  // While there remain elements to shuffle...
+  while (0 !== currentIndex) {
+    // Pick a remaining element...
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+
+    // And swap it with the current element.
+    temporaryValue = a[currentIndex];
+    a[currentIndex] = a[randomIndex];
+    a[randomIndex] = temporaryValue;
+  }
+
+  return a;
+}
+
+var categories = [
+  {
+    name: "exchange",
+    tweets: [
+      "Buy #BUZZ on the following exchanges! https://www.coinexchange.io/ and https://yobit.net/en/. Get your #BUZZCOIN today!",
+      "Don't leave us just yet! Place your #BUZZ sell orders at 25 sats to create a massive wall! Go #BUZZCOIN!"
+    ],
+    active: true
+  },
+  {
+    name: "os",
+    tweets: [
+      "#Passionate for #blockchain and #development? Get $BUZZ with our #opensource incentive program! https://goo.gl/1vCMss #innovation #buzzcoin #buzzfam",
+      "OS_SECOND_TWEET"
+    ],
+    active: true
+  },
+  {
+    name: "community",
+    tweets: [
+      "Get 24/7 $BUZZ support by joining our Discord server! https://t.co/XghGz66wYo #community #blockchain #cryptocommunity",
+      "COMM_SECOND_TWEET"
+    ],
+    active: true
+  },
+  {
+    name: "get-started",
+    tweets: [
+      "New to $BUZZ? Getting started has never been easier at http://buzzcoin.info/get-started.html",
+      "GET_STARTED_SECOND_TWEET"
+    ],
+    active: false
+  }
+];
+
+shuffle(categories)
+  .filter(function(category) {
+    // excludes inactive categories.
+    if (category.active) {
+      return category;
     }
-]
+  })
+  .slice(0, 2) // take only first two categories
+  .map(function(category) {
+    console.log("[INFO] sending tweet for category -> " + category.name);
 
-// Pick tweets
-var result = tweets.map(function (tweets) {
-    return tweets.status;
-});
+    var rand = getRandomNumber(0, category.tweets.length);
+    var status = category.tweets[rand];
 
-// Shuffle tweets
-var randTweet = shuffle(result)
-var result = result.slice(0, 1)[0]//.toString*/();
-console.log(result);
+    console.log("status ", status);
 
-/* client.post('statuses/destroy/:id', { id: '923608115655991297' }, function (err, data, response) {
-    console.log(data)
-  }) */
-
-/* client.post('statuses/update', { status: result }, function(err, data, response) {
-    console.log(data)
-  }) */
+    client.post("statuses/update", { status }, function(err, data, response) {
+      if (err) {
+        console.warn("[ERR] -> " + err);
+      } else {
+        console.log("[INFO] tweet successfully sent.");
+      }
+    });
+  });
