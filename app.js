@@ -81,14 +81,17 @@ var categories = [
   }
 ];
 
+// create global variable to store this runs categories in.
 var selectedCategories = [];
 
 shuffle(categories)
   .filter(function(category) {
-    // excludes inactive categories.
+    // get previous categories and return if any of the previous categories
+    // match the current one being parsed over.
     var prevCategories = fs.readFileSync("last_tweet_cats.json");
-    if (prevCategories.indexOf(category.name)) return false;
+    if (prevCategories.indexOf(category.name)) return;
 
+    // excludes inactive categories.
     if (category.active) {
       return category;
     }
@@ -112,5 +115,7 @@ shuffle(categories)
     });
   });
 
+// delete old file of previous categories
 fs.unlinkSync("last_tweet_cats.json");
+// now that run is done, add selectedCategories as previous categories for next run.
 fs.writeFileSync("last_tweet_cats.json", JSON.stringify(selectedCategories));
