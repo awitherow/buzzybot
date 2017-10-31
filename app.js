@@ -1,6 +1,7 @@
 const twit = require("twit");
 const config = require("./config");
 const client = new twit(config);
+const fs = require("fs");
 
 console.log("[INFO] Horray! BUZZBOT is running...");
 
@@ -89,8 +90,8 @@ shuffle(categories)
       return category;
     }
 
-    // TODO: lastCategories = read file last_tweet_categories.json
-    // if (lastCategories.indexOf(category.name)) return false
+    var lastCategories = fs.readFileSync("last_tweet_cats.json");
+    if (lastCategories.indexOf(category.name)) return false;
   })
   .slice(0, 2) // take only first two categories
   .map(function(category) {
@@ -111,6 +112,5 @@ shuffle(categories)
     });
   });
 
-// TODO: delete old last_tweet_categories.json
-// TODO: create a new last_tweet_categories.json
-// TODO: write selectedCategories to last_tweet_categories.json
+fs.unlinkSync("last_tweet_cats.json");
+fs.writeFileSync("last_tweet_cats.json", JSON.stringify(selectedCategories));
