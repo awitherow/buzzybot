@@ -86,12 +86,12 @@ var selectedCategories = [];
 shuffle(categories)
   .filter(function(category) {
     // excludes inactive categories.
+    var prevCategories = fs.readFileSync("last_tweet_cats.json");
+    if (prevCategories.indexOf(category.name)) return false;
+
     if (category.active) {
       return category;
     }
-
-    var lastCategories = fs.readFileSync("last_tweet_cats.json");
-    if (lastCategories.indexOf(category.name)) return false;
   })
   .slice(0, 2) // take only first two categories
   .map(function(category) {
