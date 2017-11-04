@@ -84,6 +84,9 @@ var categories = [
 // create global variable to store this runs categories in.
 var selectedCategories = [];
 
+var MAX_TWEETS = 2;
+var tweetAttempts = 0;
+
 shuffle(categories)
   .filter(function(category) {
     // get previous categories and return if any of the previous categories
@@ -96,7 +99,7 @@ shuffle(categories)
       return category;
     }
   })
-  .slice(0, 2) // take only first two categories
+  .slice(0, MAX_TWEETS) // take only first two categories
   .map(function(category) {
     console.log("[INFO] sending tweet for category -> " + category.name);
     selectedCategories.push(category.name);
@@ -112,10 +115,17 @@ shuffle(categories)
       } else {
         console.log("[INFO] tweet successfully sent.");
       }
+
+      tweetAttempts++;
+
+      if (tweetAttempts == MAX_TWEETS) {
+        // delete old file of previous categories
+        fs.unlinkSync("last_tweet_cats.json");
+        // now that run is done, add selectedCategories as previous categories for next run.
+        fs.writeFileSync(
+          "last_tweet_cats.json",
+          JSON.stringify(selectedCategories)
+        );
+      }
     });
   });
-
-// delete old file of previous categories
-fs.unlinkSync("last_tweet_cats.json");
-// now that run is done, add selectedCategories as previous categories for next run.
-fs.writeFileSync("last_tweet_cats.json", JSON.stringify(selectedCategories));
