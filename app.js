@@ -29,12 +29,12 @@ async function sendRandomTweets(categories) {
   console.log("[INFO] Sending random tweets...");
 
   var previousTweets = await db.query(
-    "SELECT * from tweets ORDER BY created DESC LIMIT 5"
+    "SELECT * from tweets ORDER BY created DESC LIMIT 6"
   );
 
   var previousCategories = [];
 
-  if (lastFiveTweets.isArray()) {
+  if (previousTweets.isArray()) {
     previousCategories = previousTweets.reduce(prev => prev.category, []);
   }
 
@@ -48,7 +48,7 @@ async function sendRandomTweets(categories) {
         return category;
       }
     })
-    .slice(0, MAX_TWEETS) // take only first two categories
+    .slice(0, MAX_TWEETS) // take only first XXX categories
     .map(function(category) {
       console.log("[INFO] sending tweet for category -> " + category.name);
       selectedCategories.push(category.name);
