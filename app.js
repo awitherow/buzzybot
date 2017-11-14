@@ -1,25 +1,47 @@
-const config = require("./config");
-const twit = require("twit");
-const client = new twit(config);
+if (process.env.NODE_ENV === "development") {
+  require("dotenv").load();
+}
 
-const { shuffle, getRandomNumber } = require("./helpers");
-const tweets = require("./tweets");
+// twitter client
+var twit = require("twit");
+var client = new twit({
+  consumer_key: process.env.CONSUMER_KEY,
+  consumer_secret: process.env.CONSUMER_SECRET,
+  access_token: process.env.ACCESS_TOKEN,
+  access_token_secret: process.env.ACCESS_TOKEN_SECRET
+});
+
+// database
+var db = require("./db");
+
+// helper functions and tweets
+var { shuffle, getRandomNumber } = require("./helpers");
+var tweets = require("./tweets");
 
 // create global variable to store this runs categories in.
 var selectedCategories = [];
 
-// constants
+// varants
 var MAX_TWEETS = 2;
+var COUNT = 0;
 
-function sendRandomTweets(categories) {
+async function sendRandomTweets(categories) {
   console.log("[INFO] Sending random tweets...");
+
+  var previousTweets = await db.query(
+    "SELECT * from tweets ORDER BY created DESC LIMIT 5"
+  );
+
+  var previousCategories = [];
+
+  if (lastFiveTweets.isArray()) {
+    previousCategories = previousTweets.reduce(prev => prev.category, []);
+  }
 
   shuffle(categories)
     .filter(function(category) {
       // get previous categories and return if any of the previous categories
-      // match the current one being parsed over.
-      // TODO: get last six entries from postgres database
-      if (prevCategories.indexOf(category.name)) return;
+      if (previousCategories.indexOf(category.name)) return;
 
       // excludes inactive categories.
       if (category.active) {
@@ -43,9 +65,13 @@ function sendRandomTweets(categories) {
           console.log("[INFO] tweet successfully sent.");
         }
 
-        // TODO: add entry to postgres database
+        if (COUNT === MAX_TWEETS) {
+          selectedCategories.forEach(function(category) {
+            db.query("insert into tweets(category) VALUES(${category})", {
+              category
+            });
+          });
+        }
       });
     });
 }
-
-sendRandomTweets(tweets);
