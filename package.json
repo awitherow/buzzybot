@@ -19,6 +19,7 @@
   "homepage": "https://github.com/jackkdev/buzzybot#readme",
   "dependencies": {
     "dotenv": "^4.0.0",
+    "pg-promise": "^7.3.1",
     "twit": "^2.2.9"
   }
 }

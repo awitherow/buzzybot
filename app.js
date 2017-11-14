@@ -1,106 +1,77 @@
-const twit = require("twit");
-const config = require("./config");
-const client = new twit(config);
-
-console.log("[INFO] Horray! BUZZBOT is running...");
-
-/**
- * Gets a random integer between a max and minimum.
- * @param {int} min minimum number for the random number return value.
- * @param {int} max maximum number for the random number return value.
- */
-function getRandomNumber(min, max) {
-  return Math.floor(Math.random() * (max - min)) + min;
+if (process.env.NODE_ENV === "development") {
+  require("dotenv").load();
 }
 
-/**
- * Shuffles array in place.
- * @param {Array} a items An array containing the items.
- */
-function shuffle(a) {
-  var currentIndex = a.length,
-    temporaryValue,
-    randomIndex;
+// twitter client
+var twit = require("twit");
+var client = new twit({
+  consumer_key: process.env.CONSUMER_KEY,
+  consumer_secret: process.env.CONSUMER_SECRET,
+  access_token: process.env.ACCESS_TOKEN,
+  access_token_secret: process.env.ACCESS_TOKEN_SECRET
+});
 
-  // While there remain elements to shuffle...
-  while (0 !== currentIndex) {
-    // Pick a remaining element...
-    randomIndex = Math.floor(Math.random() * currentIndex);
-    currentIndex -= 1;
+// database
+var db = require("./db");
 
-    // And swap it with the current element.
-    temporaryValue = a[currentIndex];
-    a[currentIndex] = a[randomIndex];
-    a[randomIndex] = temporaryValue;
+// helper functions and tweets
+var { shuffle, getRandomNumber } = require("./helpers");
+var tweets = require("./tweets");
+
+// create global variable to store this runs categories in.
+var selectedCategories = [];
+
+// varants
+var MAX_TWEETS = 2;
+var COUNT = 0;
+
+async function sendRandomTweets(categories) {
+  console.log("[INFO] Sending random tweets...");
+
+  var previousTweets = await db.query(
+    "SELECT * from tweets ORDER BY created DESC LIMIT 6"
+  );
+
+  var previousCategories = [];
+
+  if (previousTweets.isArray()) {
+    previousCategories = previousTweets.reduce(prev => prev.category, []);
   }
 
-  return a;
-}
+  shuffle(categories)
+    .filter(function(category) {
+      // get previous categories and return if any of the previous categories
+      if (previousCategories.indexOf(category.name)) return;
 
-var categories = [
-  {
-    name: "exchange",
-    tweets: [
-      "Buy #BUZZ on the following exchanges! https://www.coinexchange.io/ and https://yobit.net/en/. Get your #BUZZCOIN today!",
-      "Don't leave us just yet! Place your #BUZZ sell orders at 25 sats to create a massive wall! Go #BUZZCOIN!"
-    ],
-    active: true
-  },
-  {
-    name: "os",
-    tweets: [
-      "#Passionate for #blockchain and #development? Get $BUZZ with our #opensource incentive program! https://goo.gl/1vCMss #innovation #buzzcoin #buzzfam",
-      "At $BUZZ, our entire infrastructure is #opensource, and for all work done, we reward in $BUZZ. Get Involved Today at https://goo.gl/1vCMss"
-    ],
-    active: true
-  },
-  {
-    name: "community",
-    tweets: [
-      "Get 24/7 $BUZZ support by joining our Discord server! https://t.co/XghGz66wYo #community #blockchain #cryptocommunity",
-      "Like @telegram? $BUZZ got your back! Join us there, today! https://t.me/joinchat/EqD7e0FNSbRzjGwBRiv5cQ #community #blockchain #buzzfam"
-    ],
-    active: true
-  },
-  {
-    name: "get-started",
-    tweets: [
-      "New to $BUZZ? Getting started has never been easier at http://buzzcoin.info/get-started.html $BUZZ #buzzcoin #community",
-      "Wanna join the #BUZZFAM but don't know how to get set up? We got a guide for that! Check it! http://buzzcoin.info/get-started.html #buzzcoin $BUZZ #community"
-    ],
-    active: true
-  },
-  {
-    name: "pool",
-    tweets: [
-      "Interesting in getting #ProofofStake #rewards daily with $BUZZ? Join the #official #buzz #pool today! buzzcoin.info",
-      "Don't have a lot of $BUZZ? Waiting forever to stake? Earn guaranteed daily stake rewards with the #official $buzz #pool -> buzzcoin.info"
-    ],
-    active: false
-  }
-];
-
-shuffle(categories)
-  .filter(function(category) {
-    // excludes inactive categories.
-    if (category.active) {
-      return category;
-    }
-  })
-  .slice(0, 2) // take only first two categories
-  .map(function(category) {
-    console.log("[INFO] sending tweet for category -> " + category.name);
-
-    var rand = getRandomNumber(0, category.tweets.length);
-    var status = category.tweets[rand];
-
-    console.log("[INFO] status chosen -> ", status);
-
-    client.post("statuses/update", { status }, function(err, data, response) {
-      if (err) {
-        console.warn("[ERR] -> " + err);
-      } else {
-        console.log("[INFO] tweet successfully sent.");
+      // excludes inactive categories.
+      if (category.active) {
+        return category;
       }
+    })
+    .slice(0, MAX_TWEETS) // take only first XXX categories
+    .map(function(category) {
+      console.log("[INFO] sending tweet for category -> " + category.name);
+      selectedCategories.push(category.name);
+
+      var rand = getRandomNumber(0, category.tweets.length);
+      var status = category.tweets[rand];
+
+      console.log("[INFO] status chosen -> ", status);
+
+      client.post("statuses/update", { status }, function(err, data, response) {
+        if (err) {
+          console.warn("[ERR] -> " + err);
+        } else {
+          console.log("[INFO] tweet successfully sent.");
+        }
+
+        if (COUNT === MAX_TWEETS) {
+          selectedCategories.forEach(function(category) {
+            db.query("insert into tweets(category) VALUES(${category})", {
+              category
+            });
+          });
+        }
+      });
     });
-  });
+}
